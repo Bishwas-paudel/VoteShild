@@ -1,0 +1,74 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.temp
+*.tmp
+*.svclog
+*.pidb
+*.svclog
+
+# Visual Studio files
+.vs/
+*.dbmdl
+*.jfm
+
+# ASP.NET Core auto generated
+Generated\ Files/
+ScaffoldingReadMe.txt
+
+# Logs
+*.log
+Logs/
+
+# Environment files
+appsettings.Development.json
+appsettings.Local.json
+*.env
+
+# Sensitive config
+secret.json
+
+# Publish output
+/publish/
+/wwwroot/uploads/
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+project.lock.json
+project.fragment.lock.json
+
+# Backup files
+*_backup*/
+*.bak
+
+# Rider/JetBrains
+.idea/
+*.DotSettings.user
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Node (if frontend inside)
+node_modules/
+dist/
+npm-debug.log
+
+# EF Core Migrations snapshot optional
+Migrations/
+
+# Images/Videos uploaded by users
+wwwroot/uploads/
+
+# Temporary
+temp/
+
