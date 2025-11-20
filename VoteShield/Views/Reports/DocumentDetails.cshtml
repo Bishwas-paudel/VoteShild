@@ -1,0 +1,193 @@
+﻿@model Document
+
+@{
+    ViewData["Title"] = "Document Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Document Analysis
+                    </h3>
+                    <span class="badge bg-@(Model.VerificationStatus == "Verified" ? "success" :
+                                          Model.VerificationStatus == "Rejected" ? "danger" :
+                                          Model.VerificationStatus == "Suspicious" ? "warning" : "secondary")">
+                        @Model.VerificationStatus
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Document Information</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Original Name:</strong></td>
+                                    <td>@Model.OriginalFileName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Type:</strong></td>
+                                    <td>@Model.DocumentType</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Uploaded:</strong></td>
+                                    <td>@Model.UploadedAt.ToString("f")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>File Size:</strong></td>
+                                    <td>@(Model.FileSize / 1024) KB</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>AI Analysis</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Confidence Score:</strong></td>
+                                    <td>
+                                        @if (Model.AI_ConfidenceScore.HasValue)
+                                        {
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar @(Model.AI_ConfidenceScore > 0.7 ? "bg-success" :
+                                                                       Model.AI_ConfidenceScore > 0.4 ? "bg-warning" : "bg-danger")"
+                                                     style="width: @(Model.AI_ConfidenceScore * 100)%">
+                                                    @(Model.AI_ConfidenceScore * 100)%
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Pending</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td>@Model.VerificationStatus</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.AI_DetectedAnomalies))
+                    {
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Detected Anomalies</h6>
+                            <p class="mb-0">@Model.AI_DetectedAnomalies</p>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.AI_AnalysisResult))
+                    {
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-robot me-2"></i>AI Analysis Result</h6>
+                            <p class="mb-0">@Model.AI_AnalysisResult</p>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.ExtractedText))
+                    {
+                        <div class="mt-4">
+                            <h6>Extracted Text</h6>
+                            <div class="border p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+                                @Model.ExtractedText
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Document Preview -->
+                    <div class="mt-4">
+                        <h6>Document Preview</h6>
+                        @if (Model.ContentType.StartsWith("image/"))
+                        {
+                            <img src="~/uploads/@Model.DocumentType/@Model.FileName"
+                                 class="img-fluid rounded border"
+                                 alt="Document preview"
+                                 style="max-height: 400px;" />
+                        }
+                        else if (Model.ContentType == "application/pdf")
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-file-pdf me-2"></i>
+                                PDF Document: @Model.OriginalFileName
+                                <a href="~/uploads/@Model.DocumentType/@Model.FileName"
+                                   target="_blank" class="btn btn-sm btn-outline-primary ms-2">
+                                    <i class="fas fa-download me-1"></i>Download
+                                </a>
+                            </div>
+                        }
+                        else if (Model.ContentType.StartsWith("video/"))
+                        {
+                            <video controls class="w-100 rounded border" style="max-height: 400px;">
+                                <source src="~/uploads/@Model.DocumentType/@Model.FileName" type="@Model.ContentType">
+                                Your browser does not support the video tag.
+                            </video>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cog me-2"></i>Verification Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="VerifyDocument" method="post">
+                        <input type="hidden" name="documentId" value="@Model.Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Update Verification Status</label>
+                            <select name="status" class="form-select">
+                                <option value="Verified">Verified</option>
+                                <option value="Under_Review">Under Review</option>
+                                <option value="Suspicious">Suspicious</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Comments</label>
+                            <textarea name="comments" class="form-control" rows="3"
+                                      placeholder="Add verification comments..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-check-circle me-2"></i>Update Status
+                        </button>
+                    </form>
+
+                    <hr>
+
+                    <div class="d-grid gap-2">
+                        <a href="~/uploads/@Model.DocumentType/@Model.FileName"
+                           download="@Model.OriginalFileName"
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-download me-2"></i>Download Original
+                        </a>
+
+                        <button type="button" class="btn btn-outline-danger"
+                                onclick="confirmDelete('@Model.Id')">
+                            <i class="fas fa-trash me-2"></i>Delete Document
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(documentId) {
+            if (confirm('Are you sure you want to delete this document?')) {
+                window.location.href = '@Url.Action("DeleteDocument", "Reports")?id=' + documentId;
+            }
+        }
+    </script>
+}

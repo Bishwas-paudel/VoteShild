@@ -7,7 +7,7 @@ using System.Reflection.Emit;
 
 namespace VoteShield.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -15,6 +15,7 @@ namespace VoteShield.Data
         }
 
         public DbSet<Report> Reports { get; set; }
+        public DbSet<Document> Documents { get; set; }
         public DbSet<Candidate> Candidates { get; set; }
         public DbSet<ElectionEvent> ElectionEvents { get; set; }
 
