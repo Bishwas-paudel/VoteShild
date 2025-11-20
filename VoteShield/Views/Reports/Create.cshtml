@@ -1,0 +1,135 @@
+﻿@model VoteShield.Models.Report
+
+@{
+    ViewData["Title"] = "Report Election Bribery";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-flag me-2"></i>Report Election Bribery
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="District" class="form-label"></label>
+                                    <select asp-for="District" class="form-select">
+                                        <option value="">Select District</option>
+                                        <option value="Kathmandu">Kathmandu</option>
+                                        <option value="Lalitpur">Lalitpur</option>
+                                        <option value="Bhaktapur">Bhaktapur</option>
+                                        <option value="Pokhara">Pokhara</option>
+                                        <option value="Chitwan">Chitwan</option>
+                                    </select>
+                                    <span asp-validation-for="District" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Municipality" class="form-label"></label>
+                                    <input asp-for="Municipality" class="form-control" />
+                                    <span asp-validation-for="Municipality" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Location" class="form-label"></label>
+                            <input asp-for="Location" class="form-control" placeholder="Specific location where incident occurred" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Type" class="form-label"></label>
+                                    <select asp-for="Type" class="form-select">
+                                        <option value="">Select Type</option>
+                                        <option value="@ReportType.CashBribe">Cash Bribe</option>
+                                        <option value="@ReportType.GiftBribe">Gift Bribe</option>
+                                        <option value="@ReportType.Threat">Threat</option>
+                                        <option value="@ReportType.VoteBuying">Vote Buying</option>
+                                        <option value="@ReportType.Other">Other</option>
+                                    </select>
+                                    <span asp-validation-for="Type" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="InvolvedParty" class="form-label"></label>
+                                    <input asp-for="InvolvedParty" class="form-control" placeholder="Party or individual involved" />
+                                    <span asp-validation-for="InvolvedParty" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Please describe the incident in detail..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="BribeAmount" class="form-label"></label>
+                                    <input asp-for="BribeAmount" class="form-control" type="number" step="0.01" />
+                                    <span asp-validation-for="BribeAmount" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Currency" class="form-label"></label>
+                                    <select asp-for="Currency" class="form-select">
+                                        <option value="NPR">NPR (Nepalese Rupee)</option>
+                                        <option value="USD">USD</option>
+                                    </select>
+                                    <span asp-validation-for="Currency" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agreeAnonymous" required>
+                                <label class="form-check-label" for="agreeAnonymous">
+                                    I understand that this report is anonymous and I will receive a code to track its status
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Report
+                            </button>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-sms me-2"></i>Report via SMS</h5>
+                    <p>No internet? Send SMS to <strong>1616</strong> with format:</p>
+                    <code>VS [District] [Incident Type] [Brief Description]</code>
+                    <p class="text-muted mt-2">Example: <code>VS Kathmandu Cash 5000 NPR for vote</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
