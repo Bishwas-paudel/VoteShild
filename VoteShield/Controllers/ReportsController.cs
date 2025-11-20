@@ -8,8 +8,11 @@ using VoteShield.Services;
 
 namespace VoteShield.Controllers
 {
+
     public class ReportsController : Controller
     {
+        private readonly IDocumentService _documentService;
+
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ReportsController> _logger;
 
@@ -113,7 +116,7 @@ namespace VoteShield.Controllers
                         {
                             try
                             {
-                                await IDocumentService.UploadDocumentAsync(
+                                await _documentService.UploadDocumentAsync(
                                     file, DocumentTypes.Evidence_Photo, report.Id);
                             }
                             catch (Exception ex)
@@ -158,7 +161,7 @@ namespace VoteShield.Controllers
                 {
                     try
                     {
-                        var document = await IDocumentService.UploadDocumentAsync(file, documentType, reportId);
+                        var document = await _documentService.UploadDocumentAsync(file, documentType, reportId);
                         uploadedDocuments.Add(document);
                     }
                     catch (Exception ex)
@@ -180,7 +183,7 @@ namespace VoteShield.Controllers
         [HttpGet]
         public async Task<IActionResult> DocumentDetails(Guid id)
         {
-            var document = await IDocumentService.GetDocumentAsync(id);
+            var document = await _documentService.GetDocumentAsync(id);
             if (document == null) return NotFound();
 
             return View(document);
@@ -189,7 +192,7 @@ namespace VoteShield.Controllers
         [HttpPost]
         public async Task<IActionResult> VerifyDocument(Guid documentId, string status, string comments)
         {
-            var document = await IDocumentService.UpdateVerificationStatusAsync(documentId, status, comments);
+            var document = await _documentService.UpdateVerificationStatusAsync(documentId, status, comments);
             if (document == null) return NotFound();
 
             TempData["SuccessMessage"] = $"Document status updated to {status}";
